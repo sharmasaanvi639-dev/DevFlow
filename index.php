@@ -72,7 +72,7 @@ function supabase_get_projects($url, $key) {
         .navbar { background: rgba(11, 17, 32, 0.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border); padding: 15px 0; transition: all 0.3s ease; }
         .navbar-toggler { border: none; padding: 0; }
         .navbar-toggler .bi-list {color: white !important; font-size: 28px;}
-        .navbar-brand { font-weight: 800; font-size: 28px; letter-spacing: -1px; color: white !important; }
+        .navbar-brand { font-weight: 800; font-size: 28px; letter-spacing: -1px; color: white !important; cursor: pointer; } /* Added cursor pointer for admin access */
         .nav-link { color: var(--text-muted) !important; font-weight: 500; margin: 0 10px; position: relative; transition: 0.3s; }
         .nav-link:hover, .nav-link.active { color: var(--primary) !important; }
         
@@ -170,6 +170,10 @@ function supabase_get_projects($url, $key) {
                 <li class="nav-item"><a class="nav-link" href="about.php">About</a></li>
                 <li class="nav-item"><a class="nav-link" href="portfolio.php">Portfolio</a></li>
                 <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
+                <!-- HIDDEN ADMIN BUTTON (Only accessible via Double-Click Logo or Shortcut) -->
+                <li class="nav-item d-none">
+                    <a class="nav-link" href="admin.php">Admin Panel</a>
+                </li>
             </ul>
         </div>
     </div>
@@ -377,6 +381,25 @@ function supabase_get_projects($url, $key) {
         });
     }, observerOptions);
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // ==========================================
+    // SECRET ADMIN ACCESS TRIGGER
+    // ==========================================
+    
+    // Method 1: Double Click on Logo
+    const brandLogo = document.querySelector('.navbar-brand');
+    if (brandLogo) {
+        brandLogo.addEventListener('dblclick', function() {
+            window.location.href = 'admin.php';
+        });
+    }
+
+    // Method 2: Keyboard Shortcut (Ctrl + Shift + A)
+    document.addEventListener('keydown', function(event) {
+        if (event.ctrlKey && event.shiftKey && (event.key === 'A' || event.key === 'a')) {
+            window.location.href = 'admin.php';
+        }
+    });
 </script>
 </body>
 </html>
