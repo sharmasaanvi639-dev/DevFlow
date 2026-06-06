@@ -85,7 +85,8 @@
                 <div class="glass-panel p-4 mb-4 reveal">
                     <p class="text-muted mb-4">
                         I am a dedicated <strong>Full Stack Developer</strong> currently working at <strong>Tushar Bhumkar Institute Pvt. Ltd.</strong>. 
-                        I bridge the gap between dynamic frontends using <strong>React JS</strong> and powerful backends using <strong>PHP</strong> and <strong>Java</strong>.
+                        I bridge the gap between dynamic frontends using <strong>React JS</strong> and powerful backends using <strong>PHP</strong> and <strong>Java</strong>. 
+                        I have extensive experience managing complex data with <strong>PostgreSQL</strong> and database tools.
                     </p>
                     <div class="row text-center g-4">
                         <div class="col-4 border-end border-secondary border-opacity-25">
@@ -104,8 +105,9 @@
                 </div>
 
                 <div class="reveal">
-                    <h4 class="mb-3">Technical Skills</h4>
+                    <h4 class="mb-4">Technical Skills</h4>
                     <div class="row g-3">
+                        <!-- Frontend -->
                         <div class="col-md-6">
                             <div class="d-flex justify-content-between mb-1"><small>HTML5</small><small class="text-primary">98%</small></div>
                             <div class="progress"><div class="progress-bar" role="progressbar" style="width: 0%" data-width="98%"></div></div>
@@ -114,13 +116,37 @@
                             <div class="d-flex justify-content-between mb-1"><small>React JS</small><small class="text-primary">95%</small></div>
                             <div class="progress"><div class="progress-bar" role="progressbar" style="width: 0%" data-width="95%"></div></div>
                         </div>
+                        
+                        <!-- Backend -->
                         <div class="col-md-6">
                             <div class="d-flex justify-content-between mb-1"><small>PHP Backend</small><small class="text-primary">90%</small></div>
                             <div class="progress"><div class="progress-bar" role="progressbar" style="width: 0%" data-width="90%"></div></div>
                         </div>
                         <div class="col-md-6">
+                            <div class="d-flex justify-content-between mb-1"><small>Java (JSP & Servlet)</small><small class="text-primary">85%</small></div>
+                            <div class="progress"><div class="progress-bar" role="progressbar" style="width: 0%" data-width="85%"></div></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between mb-1"><small>Python</small><small class="text-primary">85%</small></div>
+                            <div class="progress"><div class="progress-bar" role="progressbar" style="width: 0%" data-width="85%"></div></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between mb-1"><small>JSP Servlet</small><small class="text-primary">85%</small></div>
+                            <div class="progress"><div class="progress-bar" role="progressbar" style="width: 0%" data-width="85%"></div></div>
+                        </div>
+
+                        <!-- Database & DevOps -->
+                        <div class="col-md-6">
                             <div class="d-flex justify-content-between mb-1"><small>PostgreSQL</small><small class="text-primary">85%</small></div>
                             <div class="progress"><div class="progress-bar" role="progressbar" style="width: 0%" data-width="85%"></div></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between mb-1"><small>Tomcat Server</small><small class="text-primary">80%</small></div>
+                            <div class="progress"><div class="progress-bar" role="progressbar" style="width: 0%" data-width="80%"></div></div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-between mb-1"><small>Docker</small><small class="text-primary">75%</small></div>
+                            <div class="progress"><div class="progress-bar" role="progressbar" style="width: 0%" data-width="75%"></div></div>
                         </div>
                     </div>
                 </div>
