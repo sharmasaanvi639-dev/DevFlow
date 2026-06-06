@@ -119,7 +119,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="text-center mt-4 reveal">
                     <p class="text-muted">Or contact me directly on</p>
                     <a href="https://wa.me/917057988551" class="text-white fs-4 me-4"><i class="bi bi-whatsapp"></i></a>
-                    <a href="mailto:contact@nikhildev.com" class="text-white fs-4 me-4"><i class="bi bi-envelope-fill"></i></a>
+                    <a href="mailto:nikhilhonkalskar2654@gmail.com" class="text-white fs-4 me-4"><i class="bi bi-envelope-fill"></i></a>
                     <a href="https://linkedin.com/in/nikhil-honkalaskar-458a09303" class="text-white fs-4"><i class="bi bi-linkedin"></i></a>
                 </div>
             </div>
