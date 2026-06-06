@@ -288,6 +288,28 @@ if (isset($_SESSION['logged_in'])) {
             padding: 15px;
         }
 
+        /* LIGHT THEME FOR MESSAGES TABLE (Requested) */
+        .light-theme {
+            background-color: #ffffff; /* White Background */
+            color: #1e293b !important; /* Dark Text */
+            border: 1px solid #e5e7eb;
+        }
+
+        .light-theme thead th {
+            background-color: #f8fafc;
+            color: #000000 !important; /* Black Headers */
+            border-bottom: 2px solid #e5e7eb;
+        }
+
+        .light-theme tbody tr:hover {
+            background-color: #f1f5f9;
+        }
+
+        .light-theme tbody td {
+            border-bottom: 1px solid #e5e7eb;
+            color: #333333 !important; /* Black Text in cells */
+        }
+
         /* Buttons */
         .btn-primary { 
             background: var(--gradient-main); 
@@ -481,7 +503,8 @@ if (isset($_SESSION['logged_in'])) {
                 <h3 class="fw-bold">Inbox</h3>
                 <span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary"><?= count($messages) ?> Total</span>
             </div>
-            <div class="glass-panel overflow-hidden">
+            
+            <div class="glass-panel light-theme overflow-hidden">
                 <div class="table-responsive">
                     <table class="table table-hover mb-0 align-middle">
                         <thead>
@@ -489,6 +512,7 @@ if (isset($_SESSION['logged_in'])) {
                                 <th>Date</th>
                                 <th>Name</th>
                                 <th>Email</th>
+                                <th>Phone</th>
                                 <th>Message</th>
                                 <th class="text-end">Action</th>
                             </tr>
@@ -497,10 +521,11 @@ if (isset($_SESSION['logged_in'])) {
                             <?php foreach($messages as $msg): ?>
                             <tr>
                                 <td class="text-muted small"><?= date('M j, Y', strtotime($msg['created_at'])) ?></td>
-                                <td class="fw-semibold"><?= htmlspecialchars($msg['name']) ?></td>
-                                <td class="text-muted small"><?= htmlspecialchars($msg['email']) ?></td>
+                                <td class="fw-semibold text-dark"><?= htmlspecialchars($msg['name']) ?></td>
+                                <td class="text-muted small text-dark"><?= htmlspecialchars($msg['email']) ?></td>
+                                <td class="text-muted small text-dark"><?= htmlspecialchars($msg['phone']) ?></td>
                                 <td>
-                                    <div class="text-truncate" style="max-width: 250px;"><?= htmlspecialchars(substr($msg['message'], 0, 40)) ?>...</div>
+                                    <div class="text-truncate text-dark" style="max-width: 250px;"><?= htmlspecialchars(substr($msg['message'], 0, 40)) ?>...</div>
                                 </td>
                                 <td class="text-end">
                                     <form method="POST" class="d-inline" onsubmit="return confirm('Are you sure you want to delete this message?');">
@@ -513,7 +538,7 @@ if (isset($_SESSION['logged_in'])) {
                             </tr>
                             <?php endforeach; ?>
                             <?php if(count($messages) == 0): ?>
-                                <tr><td colspan="5" class="text-center py-5 text-muted">No messages found.</td></tr>
+                                <tr><td colspan="6" class="text-center py-5 text-dark">No messages found.</td></tr>
                             <?php endif; ?>
                         </tbody>
                     </table>
