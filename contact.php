@@ -1,21 +1,57 @@
 <?php
+// ==========================================
+// CONFIGURATION
+// ==========================================
  $supabaseUrl = "https://gflakfgduibcppsaowao.supabase.co"; 
  $supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmbGFrZmdkdWliY3Bwc2Fvd2FvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NjI4OTYsImV4cCI6MjA5NjEzODg5Nn0.XvJ8hJgCkVDaQKeRkxM9meFhBD1a7gvyeqF29BYnAI0"; 
 
+// Helper: Send Contact Message
 function supabase_post($url, $key, $table, $data) {
-    $endpoint = $url . "/rest/v1/" . $table; $ch = curl_init($endpoint);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); curl_setopt($ch, CURLOPT_POST, true); curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ["apikey: " . $key, "Authorization: Bearer " . $key, "Content-Type: application/json", "Prefer: return=minimal"]);
-    $response = curl_exec($ch); $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); curl_close($ch); return $httpCode == 201; 
+    $endpoint = $url . "/rest/v1/" . $table;
+    $ch = curl_init($endpoint);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    $headers = [
+        "apikey: " . $key,
+        "Authorization: Bearer " . $key,
+        "Content-Type: application/json",
+        "Prefer: return=minimal"
+    ];
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    $response = curl_exec($ch);
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    curl_close($ch);
+    return $httpCode == 201; 
 }
 
+// 1. Handle Contact Form Submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header('Content-Type: application/json');
-    $name = trim($_POST['name'] ?? ''); $email = trim($_POST['email'] ?? ''); $message = trim($_POST['message'] ?? '');
-    if (empty($name) || empty($email) || empty($message)) { echo json_encode(["status" => "error", "message" => "All fields are required."]); exit; }
-    if (supabase_post($supabaseUrl, $supabaseKey, "messages", ["name" => $name, "email" => $email, "message" => $message])) {
+
+    $name = trim($_POST['name'] ?? '');
+    $email = trim($_POST['email'] ?? '');
+    $phone = trim($_POST['phone'] ?? ''); // New Phone Field
+    $message = trim($_POST['message'] ?? '');
+
+    // Updated Validation
+    if (empty($name) || empty($email) || empty($phone) || empty($message)) {
+        echo json_encode(["status" => "error", "message" => "All fields are required."]);
+        exit;
+    }
+
+    $data = [
+        "name" => $name,
+        "email" => $email,
+        "phone" => $phone, // Adding phone to data
+        "message" => $message
+    ];
+
+    if (supabase_post($supabaseUrl, $supabaseKey, "messages", $data)) {
         echo json_encode(["status" => "success", "message" => "Message sent successfully!"]);
-    } else { echo json_encode(["status" => "error", "message" => "Failed to save message."]); }
+    } else {
+        echo json_encode(["status" => "error", "message" => "Failed to save message."]);
+    }
     exit;
 }
 ?>
@@ -25,12 +61,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact | Nikhil Honkalaskar</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
-        :root { --bg-dark: #0B1120; --bg-card: rgba(30, 41, 59, 0.7); --primary: #38BDF8; --text-muted: #94A3B8; --glass-border: rgba(255, 255, 255, 0.1); --gradient-main: linear-gradient(135deg, #38BDF8 0%, #818CF8 100%); }
+        /* CORE VARIABLES */
+        :root {
+            --bg-dark: #0B1120;
+            --bg-card: rgba(30, 41, 59, 0.7);
+            --primary: #38BDF8;
+            --text-muted: #94A3B8;
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --gradient-main: linear-gradient(135deg, #38BDF8 0%, #818CF8 100%);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
         html, body { background-color: var(--bg-dark); color: #F1F5F9; font-family: 'Outfit', sans-serif; overflow-x: hidden; line-height: 1.7; }
         p, span, small, div, li { color: inherit !important; }
@@ -41,12 +88,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         .glass-panel { background: var(--bg-card); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--glass-border); border-radius: 20px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); color: #F1F5F9; }
         .reveal { opacity: 0; transform: translateY(50px); transition: all 0.8s ease-out; }
         .reveal.active { opacity: 1; transform: translateY(0); }
+
+        /* NAVIGATION */
         .navbar { background: rgba(11, 17, 32, 0.85); backdrop-filter: blur(10px); border-bottom: 1px solid var(--glass-border); padding: 15px 0; }
-          .navbar-toggler { border: none; padding: 0; }
-        .navbar-toggler .bi-list {color: white !important; font-size: 28px;}
+        .navbar-toggler { border: none; padding: 0; }
+        .navbar-toggler .bi-list { color: white !important; font-size: 28px; }
         .navbar-brand { font-weight: 800; font-size: 28px; color: white !important; }
         .nav-link { color: var(--text-muted) !important; font-weight: 500; margin: 0 10px; transition: 0.3s; }
         .nav-link:hover, .nav-link.active { color: var(--primary) !important; }
+
+        /* CONTACT */
         .section-padding { padding: 100px 0; }
         .hero-section { min-height: 60vh; position: relative; display: flex; align-items: center; padding-top: 80px; background: rgba(0,0,0,0.2); }
         .form-control { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: #ffffff !important; padding: 15px; border-radius: 10px; }
@@ -84,7 +135,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </nav>
 
-<!-- SMALL HERO -->
+<!-- PAGE HEADER -->
 <section class="hero-section">
     <div class="container text-center">
         <h1 class="display-4 fw-bold mb-3 reveal">Get In <span class="text-gradient">Touch</span></h1>
@@ -105,9 +156,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 <input type="text" name="name" class="form-control" placeholder="John Doe" required>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="form-label small text-muted">Your Email</label>
-                                <input type="email" name="email" class="form-control" placeholder="john@example.com" required>
+                                <label class="form-label small text-muted">Phone Number</label>
+                                <input type="tel" name="phone" class="form-control" placeholder="+91 98765 43210" required>
                             </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Your Email</label>
+                            <input type="email" name="email" class="form-control" placeholder="john@example.com" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label small text-muted">Message</label>
@@ -119,7 +174,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="text-center mt-4 reveal">
                     <p class="text-muted">Or contact me directly on</p>
                     <a href="https://wa.me/917057988551" class="text-white fs-4 me-4"><i class="bi bi-whatsapp"></i></a>
-                    <a href="mailto:nikhilhonkalskar2654@gmail.com" class="text-white fs-4 me-4"><i class="bi bi-envelope-fill"></i></a>
+                    <a href="mailto:contact@nikhildev.com" class="text-white fs-4 me-4"><i class="bi bi-envelope-fill"></i></a>
                     <a href="https://linkedin.com/in/nikhil-honkalaskar-458a09303" class="text-white fs-4"><i class="bi bi-linkedin"></i></a>
                 </div>
             </div>
@@ -128,10 +183,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </section>
 
 <footer>
-    <div class="container text-center"><p class="text-muted mb-0">&copy; 2026 Nikhil Honkalaskar. All Rights Reserved.</p></div>
+    <div class="container text-center">
+        <p class="text-muted mb-0">&copy; 2026 Nikhil Honkalaskar. All Rights Reserved.</p>
+    </div>
 </footer>
 
 <div class="toast-container" id="toastContainer"></div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     function showToast(message, type = 'success') {
