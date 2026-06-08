@@ -137,7 +137,7 @@
                     <p class="text-muted mb-4">I am a dedicated <strong>Full Stack Developer</strong> currently working at <strong>Tushar Bhumkar Institute Pvt. Ltd.</strong>. I bridge the gap between dynamic frontends using <strong>React JS</strong> and powerful backends using <strong>PHP</strong> and <strong>Java</strong>. I have extensive experience managing complex data with <strong>PostgreSQL</strong> and database tools.</p>
                     <div class="row text-center g-4">
                         <div class="col-4 border-end border-secondary border-opacity-25"><div class="stat-item"><h3 class="counter" data-target="1">0</h3><span style="font-size:1.5rem; vertical-align:top;">+</span></div><small class="text-muted">Years Exp.</small></div>
-                        <div class="col-4 border-end border-secondary border-opacity-25"><div class="stat-item"><h3 class="counter" data-target="10">0</h3><span style="font-size:1.5rem; vertical-align:top;">+</span></div><small class="text-muted">Projects</small></div>
+                        <div class="col-4 border-end border-secondary border-opacity-25"><div class="stat-item"><h3 class="counter" data-target="5">0</h3><span style="font-size:1.5rem; vertical-align:top;">+</span></div><small class="text-muted">Projects</small></div>
                         <div class="col-4"><div class="stat-item"><h3 class="counter" data-target="3">0</h3><span style="font-size:1.5rem; vertical-align:top;">+</span></div><small class="text-muted">Clients</small></div>
                     </div>
                 </div>
