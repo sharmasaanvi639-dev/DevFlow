@@ -1,21 +1,47 @@
 <?php
  $supabaseUrl = "https://gflakfgduibcppsaowao.supabase.co"; 
  $supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdmbGFrZmdkdWliY3Bwc2Fvd2FvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA1NjI4OTYsImV4cCI6MjA5NjEzODg5Nn0.XvJ8hJgCkVDaQKeRkxM9meFhBD1a7gvyeqF29BYnAI0"; 
+
 function supabase_post($url, $key, $table, $data) {
     $endpoint = $url . "/rest/v1/" . $table;
     $ch = curl_init($endpoint);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_POST, true);
     curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ["apikey: " . $key, "Authorization: Bearer " . $key, "Content-Type: application/json", "Prefer: return=minimal"]);
-    $response = curl_exec($ch); $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); curl_close($ch);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        "apikey: " . $key, 
+        "Authorization: Bearer " . $key, 
+        "Content-Type: application/json", 
+        "Prefer: return=minimal"
+    ]);
+    $response = curl_exec($ch); 
+    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); 
+    curl_close($ch);
     return $httpCode == 201; 
 }
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header('Content-Type: application/json');
-    $name = trim($_POST['name'] ?? ''); $email = trim($_POST['email'] ?? ''); $phone = trim($_POST['phone'] ?? ''); $message = trim($_POST['message'] ?? '');
-    if (empty($name) || empty($email) || empty($phone) || empty($message)) { echo json_encode(["status" => "error", "message" => "All fields are required."]); exit; }
-    if (supabase_post($supabaseUrl, $supabaseKey, "messages", ["name" => $name, "email" => $email, "phone" => $phone, "message" => $message])) { echo json_encode(["status" => "success", "message" => "Message sent successfully!"]); } else { echo json_encode(["status" => "error", "message" => "Failed to save message."]); }
+    $name = trim($_POST['name'] ?? ''); 
+    $email = trim($_POST['email'] ?? ''); 
+    $phone = trim($_POST['phone'] ?? ''); 
+    $message = trim($_POST['message'] ?? '');
+    
+    if (empty($name) || empty($email) || empty($phone) || empty($message)) { 
+        echo json_encode(["status" => "error", "message" => "All fields are required."]); 
+        exit; 
+    }
+    
+    if (supabase_post($supabaseUrl, $supabaseKey, "messages", [
+        "name" => $name, 
+        "email" => $email, 
+        "phone" => $phone, 
+        "message" => $message
+    ])) { 
+        echo json_encode(["status" => "success", "message" => "Message sent successfully!"]); 
+    } else { 
+        echo json_encode(["status" => "error", "message" => "Failed to save message."]); 
+    }
     exit;
 }
 ?>
@@ -64,7 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         footer { background: #020617; padding: 50px 0; border-top: 1px solid var(--glass-border); margin-top: 50px; }
 
         /* LOGIN & DROPDOWN STYLES */
-        .btn-auth-nav { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white; padding: 6px 16px; border-radius: 50px; transition: 0.3s; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+        .btn-auth-nav { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white; padding: 6px 16px; border-radius: 50px; transition: 0.3s; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
         .btn-auth-nav:hover { background: var(--primary); color: #000; border-color: var(--primary); }
         .user-avatar-small { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
         .dropdown-menu { background: rgba(30, 41, 59, 0.95) !important; backdrop-filter: blur(10px); border: 1px solid var(--glass-border) !important; }
@@ -87,35 +113,53 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </head>
 <body>
 
+<!-- NAV -->
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
+        <!-- Brand -->
         <a class="navbar-brand" href="index.php">Dev<span class="text-gradient">Flow</span>.</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="bi bi-list" style="color:white; font-size: 28px;"></span></button>
+        
+        <!-- RIGHT SIDE: Toggler + Login/User -->
+        <div class="d-flex align-items-center ms-auto">
+            
+            <!-- Hamburger Menu (Visible on Mobile) -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="bi bi-list" style="color:white; font-size: 28px;"></span>
+            </button>
+
+            <!-- LOGIN BUTTON (Visible when logged out - OUTSIDE COLLAPSE) -->
+            <div id="login-btn-container" class="ms-2">
+                <button id="nav-auth-btn" class="btn-auth-nav">
+                    <i class="bi bi-person"></i> Login
+                </button>
+            </div>
+
+            <!-- USER DROPDOWN (Visible when logged in - OUTSIDE COLLAPSE) -->
+            <div class="dropdown ms-2" id="user-dropdown-container" style="display: none;">
+                <a class="dropdown-toggle btn-auth-nav" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img id="dropdown-avatar" src="" class="user-avatar-small">
+                    <span id="dropdown-name" class="d-none d-lg-inline">User</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end border-0 glass-panel mt-3 shadow-lg">
+                    <li><div class="px-3 py-2"><small class="text-muted d-block">Logged in as</small><span id="dropdown-email" class="fw-bold text-white">user@email.com</span></div></li>
+                    <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                    <li><a class="dropdown-item d-flex align-items-center gap-2 text-white" href="dashboard.php"><i class="bi bi-grid"></i> Dashboard</a></li>
+                    <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                    <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="#" id="nav-logout-btn"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- COLLAPSIBLE MENU CONTENT (Links Only) -->
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto align-items-center">
+            <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="services.php">Services</a></li>
                 <li class="nav-item"><a class="nav-link" href="about.php">About</a></li>
                 <li class="nav-item"><a class="nav-link" href="portfolio.php">Portfolio</a></li>
                 <li class="nav-item"><a class="nav-link active" href="contact.php">Contact</a></li>
                 <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-                
-                <li class="nav-item dropdown ms-lg-3" id="user-dropdown-container" style="display: none;">
-                    <a class="nav-link dropdown-toggle btn-auth-nav" href="#" role="button" data-bs-toggle="dropdown">
-                        <img id="dropdown-avatar" src="" class="user-avatar-small">
-                        <span id="dropdown-name">User</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end border-0 glass-panel mt-3 shadow-lg">
-                        <li><div class="px-3 py-2"><small class="text-muted d-block">Logged in as</small><span id="dropdown-email" class="fw-bold text-white">user@email.com</span></div></li>
-                        <li><hr class="dropdown-divider border-secondary opacity-25"></li>
-                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-white" href="dashboard.php"><i class="bi bi-grid"></i> Dashboard</a></li>
-                        <li><hr class="dropdown-divider border-secondary opacity-25"></li>
-                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="#" id="nav-logout-btn"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item ms-lg-3" id="login-btn-container">
-                    <button id="nav-auth-btn" class="btn-auth-nav"><i class="bi bi-person"></i> Login</button>
-                </li>
             </ul>
         </div>
     </div>
@@ -136,7 +180,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </div>
 </div>
 
-<section class="hero-section"><div class="container text-center"><h1 class="display-4 fw-bold mb-3 reveal">Get In <span class="text-gradient">Touch</span></h1><p class="lead text-muted reveal">Let's build something amazing together.</p></div></section>
+<section class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3 reveal">Get In <span class="text-gradient">Touch</span></h1>
+        <p class="lead text-muted reveal">Let's build something amazing together.</p>
+    </div>
+</section>
 
 <section id="contact" class="section-padding">
     <div class="container">
@@ -145,15 +194,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="glass-panel p-5 reveal">
                     <form id="contactForm">
                         <div class="row">
-                            <div class="col-md-6 mb-3"><label class="form-label small text-muted">Your Name</label><input type="text" name="name" class="form-control" placeholder="Your Name" required></div>
-                            <div class="col-md-6 mb-3"><label class="form-label small text-muted">Phone Number</label><input type="tel" name="phone" class="form-control" placeholder="+91 98765 43210" required></div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label small text-muted">Your Name</label>
+                                <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label small text-muted">Phone Number</label>
+                                <input type="tel" name="phone" class="form-control" placeholder="+91 98765 43210" required>
+                            </div>
                         </div>
-                        <div class="mb-3"><label class="form-label small text-muted">Your Email</label><input type="email" name="email" class="form-control" placeholder="Name@example.com" required></div>
-                        <div class="mb-3"><label class="form-label small text-muted">Message</label><textarea name="message" class="form-control" rows="5" placeholder="Tell me about your project..." required></textarea></div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Your Email</label>
+                            <input type="email" name="email" class="form-control" placeholder="Name@example.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small text-muted">Message</label>
+                            <textarea name="message" class="form-control" rows="5" placeholder="Tell me about your project..." required></textarea>
+                        </div>
                         <button type="submit" class="btn-glow w-100" id="submitBtn">Send Message <i class="bi bi-send-fill ms-2"></i></button>
                     </form>
                 </div>
-   <div class="text-center mt-4 reveal">
+                <div class="text-center mt-4 reveal">
                     <p class="text-muted">Or contact me directly on</p>
                     <a href="https://wa.me/917057988551" class="text-white fs-4 me-4"><i class="bi bi-whatsapp"></i></a>
                     <a href="mailto:contact@nikhildev.com" class="text-white fs-4 me-4"><i class="bi bi-envelope-fill"></i></a>
@@ -162,33 +223,66 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
     </div>
-
 </section>
 
-<footer><div class="container text-center"><p class="text-muted mb-0">&copy; 2026 Nikhil Honkalaskar. All Rights Reserved.</p></div></footer>
+<footer>
+    <div class="container text-center">
+        <p class="text-muted mb-0">&copy; 2026 Nikhil Honkalaskar. All Rights Reserved.</p>
+    </div>
+</footer>
 
 <div class="toast-container" id="toastContainer"></div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // Contact Form Logic
     function showToast(message, type = 'success') {
-        const container = document.getElementById('toastContainer'); const toast = document.createElement('div');
-        toast.className = `custom-toast ${type}`; let icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
+        const container = document.getElementById('toastContainer'); 
+        const toast = document.createElement('div');
+        toast.className = `custom-toast ${type}`; 
+        let icon = type === 'success' ? 'bi-check-circle-fill' : 'bi-exclamation-triangle-fill';
         toast.innerHTML = `<i class="bi ${icon} fs-5"></i><div><h6 class="mb-0 fw-bold">${type === 'success' ? 'Success' : 'Error'}</h6><small class="opacity-75">${message}</small></div>`;
-        container.appendChild(toast); setTimeout(() => toast.classList.add('show'), 100);
-        setTimeout(() => { toast.classList.remove('show'); setTimeout(() => toast.remove(), 400); }, 3000);
+        container.appendChild(toast); 
+        setTimeout(() => toast.classList.add('show'), 100);
+        setTimeout(() => { 
+            toast.classList.remove('show'); 
+            setTimeout(() => toast.remove(), 400); 
+        }, 3000);
     }
+
     document.getElementById('contactForm').addEventListener('submit', function(e) {
-        e.preventDefault(); const btn = document.getElementById('submitBtn'); const originalText = btn.innerHTML; btn.disabled = true; btn.innerHTML = 'Sending...';
+        e.preventDefault(); 
+        const btn = document.getElementById('submitBtn'); 
+        const originalText = btn.innerHTML; 
+        btn.disabled = true; 
+        btn.innerHTML = 'Sending...';
+        
         fetch(window.location.href, { method: 'POST', body: new FormData(this) })
-        .then(response => response.json()).then(data => {
-            btn.disabled = false; btn.innerHTML = originalText;
-            if (data.status === 'success') { showToast(data.message, "success"); this.reset(); }
-            else { showToast(data.message, "error"); }
-        }).catch(error => { btn.disabled = false; btn.innerHTML = originalText; showToast("Connection error.", "error"); });
+        .then(response => response.json())
+        .then(data => {
+            btn.disabled = false; 
+            btn.innerHTML = originalText;
+            if (data.status === 'success') { 
+                showToast(data.message, "success"); 
+                this.reset(); 
+            } else { 
+                showToast(data.message, "error"); 
+            }
+        }).catch(error => { 
+            btn.disabled = false; 
+            btn.innerHTML = originalText; 
+            showToast("Connection error.", "error"); 
+        });
     });
+
+    // Reveal Animation
     const observerOptions = { threshold: 0.15 };
     const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('active'); observer.unobserve(entry.target); } });
+        entries.forEach(entry => { 
+            if (entry.isIntersecting) { 
+                entry.target.classList.add('active'); 
+                observer.unobserve(entry.target); 
+            } 
+        });
     }, observerOptions);
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 </script>
@@ -197,28 +291,82 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
     const firebaseConfig = {
-  apiKey: "AIzaSyBs_IJ_74Y8GsyChljUe2574PvyKokhV9c",
-  authDomain: "login-f9a06.firebaseapp.com",
-  projectId: "login-f9a06",
-  storageBucket: "login-f9a06.firebasestorage.app",
-  messagingSenderId: "493587142230",
-  appId: "1:493587142230:web:d87480038d5f020d71cdf7",
-  measurementId: "G-451PH7KT8T"
-};
-    const app = initializeApp(firebaseConfig); const auth = getAuth(app); const provider = new GoogleAuthProvider();
-    const navAuthBtn = document.getElementById('nav-auth-btn'); const authModal = document.getElementById('auth-modal'); const closeModalBtn = document.getElementById('close-modal-btn'); const googleBtn = document.getElementById('modal-google-btn'); const emailForm = document.getElementById('modal-email-form'); const errorMsg = document.getElementById('modal-error-msg');
-    const userDropdown = document.getElementById('user-dropdown-container'); const loginBtnContainer = document.getElementById('login-btn-container'); const logoutBtn = document.getElementById('nav-logout-btn'); const dropdownAvatar = document.getElementById('dropdown-avatar'); const dropdownName = document.getElementById('dropdown-name'); const dropdownEmail = document.getElementById('dropdown-email');
+        apiKey: "AIzaSyBs_IJ_74Y8GsyChljUe2574PvyKokhV9c",
+        authDomain: "login-f9a06.firebaseapp.com",
+        projectId: "login-f9a06",
+        storageBucket: "login-f9a06.firebasestorage.app",
+        messagingSenderId: "493587142230",
+        appId: "1:493587142230:web:d87480038d5f020d71cdf7",
+        measurementId: "G-451PH7KT8T"
+    };
+
+    const app = initializeApp(firebaseConfig); 
+    const auth = getAuth(app); 
+    const provider = new GoogleAuthProvider();
+
+    const navAuthBtn = document.getElementById('nav-auth-btn'); 
+    const authModal = document.getElementById('auth-modal'); 
+    const closeModalBtn = document.getElementById('close-modal-btn'); 
+    const googleBtn = document.getElementById('modal-google-btn'); 
+    const emailForm = document.getElementById('modal-email-form'); 
+    const errorMsg = document.getElementById('modal-error-msg');
+
+    const userDropdown = document.getElementById('user-dropdown-container'); 
+    const loginBtnContainer = document.getElementById('login-btn-container'); 
+    const logoutBtn = document.getElementById('nav-logout-btn'); 
+    const dropdownAvatar = document.getElementById('dropdown-avatar'); 
+    const dropdownName = document.getElementById('dropdown-name'); 
+    const dropdownEmail = document.getElementById('dropdown-email');
 
     navAuthBtn.addEventListener('click', () => authModal.classList.add('active'));
-    closeModalBtn.addEventListener('click', () => { authModal.classList.remove('active'); errorMsg.textContent = ""; });
-    authModal.addEventListener('click', (e) => { if (e.target === authModal) authModal.classList.remove('active'); });
-    googleBtn.addEventListener('click', () => { signInWithPopup(auth, provider).then(() => authModal.classList.remove('active')).catch((e) => errorMsg.textContent = e.message); });
-    emailForm.addEventListener('submit', (e) => { e.preventDefault(); const email = document.getElementById('modal-email').value; const pass = document.getElementById('modal-password').value; signInWithEmailAndPassword(auth, email, pass).then(() => authModal.classList.remove('active')).catch((e) => errorMsg.textContent = e.message); });
-    onAuthStateChanged(auth, (user) => {
-        if (user) { loginBtnContainer.style.display = 'none'; userDropdown.style.display = 'block'; const pUrl = user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=random`; const dName = user.displayName || user.email.split('@')[0]; dropdownAvatar.src = pUrl; dropdownName.textContent = dName; dropdownEmail.textContent = user.email; } else { loginBtnContainer.style.display = 'block'; userDropdown.style.display = 'none'; }
+    
+    closeModalBtn.addEventListener('click', () => { 
+        authModal.classList.remove('active'); 
+        errorMsg.textContent = ""; 
     });
-    if(logoutBtn) { logoutBtn.addEventListener('click', (e) => { e.preventDefault(); signOut(auth); }); }
+    
+    authModal.addEventListener('click', (e) => { 
+        if (e.target === authModal) authModal.classList.remove('active'); 
+    });
+    
+    googleBtn.addEventListener('click', () => { 
+        signInWithPopup(auth, provider)
+            .then(() => authModal.classList.remove('active'))
+            .catch((e) => errorMsg.textContent = e.message); 
+    });
+
+    emailForm.addEventListener('submit', (e) => { 
+        e.preventDefault(); 
+        const email = document.getElementById('modal-email').value; 
+        const pass = document.getElementById('modal-password').value; 
+        signInWithEmailAndPassword(auth, email, pass)
+            .then(() => authModal.classList.remove('active'))
+            .catch((e) => errorMsg.textContent = e.message); 
+    });
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) { 
+            loginBtnContainer.style.display = 'none'; 
+            userDropdown.style.display = 'block'; 
+            const pUrl = user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=random`; 
+            const dName = user.displayName || user.email.split('@')[0]; 
+            dropdownAvatar.src = pUrl; 
+            dropdownName.textContent = dName; 
+            dropdownEmail.textContent = user.email; 
+        } else { 
+            loginBtnContainer.style.display = 'block'; 
+            userDropdown.style.display = 'none'; 
+        }
+    });
+
+    if(logoutBtn) { 
+        logoutBtn.addEventListener('click', (e) => { 
+            e.preventDefault(); 
+            signOut(auth); 
+        }); 
+    }
 </script>
 </body>
 </html>
