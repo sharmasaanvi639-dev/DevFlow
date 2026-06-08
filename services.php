@@ -38,7 +38,7 @@
         footer { background: #020617; padding: 50px 0; border-top: 1px solid var(--glass-border); margin-top: 50px; }
 
         /* LOGIN & DROPDOWN STYLES */
-        .btn-auth-nav { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white; padding: 6px 16px; border-radius: 50px; transition: 0.3s; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+        .btn-auth-nav { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white; padding: 6px 16px; border-radius: 50px; transition: 0.3s; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
         .btn-auth-nav:hover { background: var(--primary); color: #000; border-color: var(--primary); }
         .user-avatar-small { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
         .dropdown-menu { background: rgba(30, 41, 59, 0.95) !important; backdrop-filter: blur(10px); border: 1px solid var(--glass-border) !important; }
@@ -61,35 +61,53 @@
 </head>
 <body>
 
+<!-- NAV -->
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
+        <!-- Brand -->
         <a class="navbar-brand" href="index.php">Dev<span class="text-gradient">Flow</span>.</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"><span class="bi bi-list" style="color:white; font-size: 28px;"></span></button>
+        
+        <!-- RIGHT SIDE: Toggler + Login/User -->
+        <div class="d-flex align-items-center ms-auto">
+            
+            <!-- Hamburger Menu (Visible on Mobile) -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="bi bi-list" style="color:white; font-size: 28px;"></span>
+            </button>
+
+            <!-- LOGIN BUTTON (Visible when logged out - OUTSIDE COLLAPSE) -->
+            <div id="login-btn-container" class="ms-2">
+                <button id="nav-auth-btn" class="btn-auth-nav">
+                    <i class="bi bi-person"></i> Login
+                </button>
+            </div>
+
+            <!-- USER DROPDOWN (Visible when logged in - OUTSIDE COLLAPSE) -->
+            <div class="dropdown ms-2" id="user-dropdown-container" style="display: none;">
+                <a class="dropdown-toggle btn-auth-nav" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img id="dropdown-avatar" src="" class="user-avatar-small">
+                    <span id="dropdown-name" class="d-none d-lg-inline">User</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end border-0 glass-panel mt-3 shadow-lg">
+                    <li><div class="px-3 py-2"><small class="text-muted d-block">Logged in as</small><span id="dropdown-email" class="fw-bold text-white">user@email.com</span></div></li>
+                    <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                    <li><a class="dropdown-item d-flex align-items-center gap-2 text-white" href="dashboard.php"><i class="bi bi-grid"></i> Dashboard</a></li>
+                    <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                    <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="#" id="nav-logout-btn"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- COLLAPSIBLE MENU CONTENT (Links Only) -->
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto align-items-center">
+            <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
                 <li class="nav-item"><a class="nav-link active" href="services.php">Services</a></li>
                 <li class="nav-item"><a class="nav-link" href="about.php">About</a></li>
                 <li class="nav-item"><a class="nav-link" href="portfolio.php">Portfolio</a></li>
                 <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
                 <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-                
-                <li class="nav-item dropdown ms-lg-3" id="user-dropdown-container" style="display: none;">
-                    <a class="nav-link dropdown-toggle btn-auth-nav" href="#" role="button" data-bs-toggle="dropdown">
-                        <img id="dropdown-avatar" src="" class="user-avatar-small">
-                        <span id="dropdown-name">User</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end border-0 glass-panel mt-3 shadow-lg">
-                        <li><div class="px-3 py-2"><small class="text-muted d-block">Logged in as</small><span id="dropdown-email" class="fw-bold text-white">user@email.com</span></div></li>
-                        <li><hr class="dropdown-divider border-secondary opacity-25"></li>
-                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-white" href="dashboard.php"><i class="bi bi-grid"></i> Dashboard</a></li>
-                        <li><hr class="dropdown-divider border-secondary opacity-25"></li>
-                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="#" id="nav-logout-btn"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
-                    </ul>
-                </li>
-                <li class="nav-item ms-lg-3" id="login-btn-container">
-                    <button id="nav-auth-btn" class="btn-auth-nav"><i class="bi bi-person"></i> Login</button>
-                </li>
             </ul>
         </div>
     </div>
@@ -110,29 +128,79 @@
     </div>
 </div>
 
-<section class="hero-section"><div class="container text-center"><h1 class="display-4 fw-bold mb-3 reveal">My <span class="text-gradient">Services</span></h1><p class="lead text-muted reveal">Comprehensive web solutions tailored to your business needs.</p></div></section>
+<section class="hero-section">
+    <div class="container text-center">
+        <h1 class="display-4 fw-bold mb-3 reveal">My <span class="text-gradient">Services</span></h1>
+        <p class="lead text-muted reveal">Comprehensive web solutions tailored to your business needs.</p>
+    </div>
+</section>
 
 <section id="services" class="section-padding">
     <div class="container">
-        <div class="section-header reveal"><h2>Core <span class="text-gradient">Expertise</span></h2><p>Tailored tech solutions for modern businesses.</p></div>
+        <div class="section-header reveal">
+            <h2>Core <span class="text-gradient">Expertise</span></h2>
+            <p>Tailored tech solutions for modern businesses.</p>
+        </div>
         <div class="row g-4">
-            <div class="col-md-4"><div class="glass-panel service-card reveal"><div class="service-icon"><i class="bi bi-code-slash"></i></div><h4>Web Development</h4><p class="text-muted mt-3">Custom web applications built with HTML5, CSS3, JavaScript, and PHP. High performance and SEO optimized.</p></div></div>
-            <div class="col-md-4"><div class="glass-panel service-card reveal" style="transition-delay: 0.1s;"><div class="service-icon"><i class="bi bi-phone"></i></div><h4>Responsive Design</h4><p class="text-muted mt-3">Fluid layouts that adapt perfectly to mobile, tablet, and desktop screens using modern CSS frameworks.</p></div></div>
-            <div class="col-md-4"><div class="glass-panel service-card reveal" style="transition-delay: 0.2s;"><div class="service-icon"><i class="bi bi-cart-check"></i></div><h4>Business Solutions</h4><p class="text-muted mt-3">Complex systems including trading portals, educational platforms, and payment gateway integrations.</p></div></div>
+            <div class="col-md-4">
+                <div class="glass-panel service-card reveal">
+                    <div class="service-icon"><i class="bi bi-code-slash"></i></div>
+                    <h4>Web Development</h4>
+                    <p class="text-muted mt-3">Custom web applications built with HTML5, CSS3, JavaScript, and PHP. High performance and SEO optimized.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-panel service-card reveal" style="transition-delay: 0.1s;">
+                    <div class="service-icon"><i class="bi bi-phone"></i></div>
+                    <h4>Responsive Design</h4>
+                    <p class="text-muted mt-3">Fluid layouts that adapt perfectly to mobile, tablet, and desktop screens using modern CSS frameworks.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-panel service-card reveal" style="transition-delay: 0.2s;">
+                    <div class="service-icon"><i class="bi bi-cart-check"></i></div>
+                    <h4>Business Solutions</h4>
+                    <p class="text-muted mt-3">Complex systems including trading portals, educational platforms, and payment gateway integrations.</p>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
 <section id="pricing" class="section-padding" style="background: rgba(255,255,255,0.02);">
     <div class="container">
-        <div class="section-header text-center reveal"><h2>Website <span class="text-gradient">Pricing</span></h2><p>Affordable and professional web development services.</p></div>
-        <div class="row g-4 justify-content-center">
-            <div class="col-lg-5"><div class="glass-panel service-card reveal text-center"><div class="service-icon mx-auto"><i class="bi bi-display"></i></div><h3>Front-End Website</h3><div class="my-4"><h1 class="text-gradient fw-bold">₹3,000+</h1></div><ul class="list-unstyled pricing-list"><li>Responsive Design</li><li>HTML, CSS, Bootstrap</li><li>JavaScript Features</li></ul></div></div>
-            <div class="col-lg-5"><div class="glass-panel service-card reveal text-center" style="border: 1px solid var(--primary);"><div class="service-icon mx-auto" style="background: var(--gradient-main); color: white;"><i class="bi bi-server"></i></div><h3>Front-End + Back-End</h3><div class="my-4"><h1 class="text-gradient fw-bold">₹5,000+</h1></div><ul class="list-unstyled pricing-list"><li>Everything in Front-End</li><li>PHP Backend</li><li>PostgreSQL Database</li></ul></div></div>
+        <div class="section-header text-center reveal">
+            <h2>Website <span class="text-gradient">Pricing</span></h2>
+            <p>Affordable and professional web development services.</p>
         </div>
-    </div>
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-5">
+                <div class="glass-panel service-card reveal text-center">
+                    <div class="service-icon mx-auto"><i class="bi bi-display"></i></div>
+                    <h3>Front-End Website</h3>
+                    <div class="my-4"><h1 class="text-gradient fw-bold">₹3,000+</h1></div>
+                    <ul class="list-unstyled pricing-list">
+                        <li>Responsive Design</li>
+                        <li>HTML, CSS, Bootstrap</li>
+                        <li>JavaScript Features</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <div class="glass-panel service-card reveal text-center" style="border: 1px solid var(--primary);">
+                    <div class="service-icon mx-auto" style="background: var(--gradient-main); color: white;"><i class="bi bi-server"></i></div>
+                    <h3>Front-End + Back-End</h3>
+                    <div class="my-4"><h1 class="text-gradient fw-bold">₹5,000+</h1></div>
+                    <ul class="list-unstyled pricing-list">
+                        <li>Everything in Front-End</li>
+                        <li>PHP Backend</li>
+                        <li>PostgreSQL Database</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 
-      <div class="row mt-5">
+        <div class="row mt-5">
             <div class="col-lg-10 mx-auto">
                 <div class="glass-panel p-4 reveal text-center">
                     <h4 class="mb-3">Important Note</h4>
@@ -151,12 +219,23 @@
     </div>
 </section>
 
-<footer><div class="container text-center"><p class="text-muted mb-0">&copy; 2026 Nikhil Honkalaskar. All Rights Reserved.</p></div></footer>
+<footer>
+    <div class="container text-center">
+        <p class="text-muted mb-0">&copy; 2026 Nikhil Honkalaskar. All Rights Reserved.</p>
+    </div>
+</footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     const observerOptions = { threshold: 0.15 };
-    const observer = new IntersectionObserver((entries) => { entries.forEach(entry => { if (entry.isIntersecting) { entry.target.classList.add('active'); observer.unobserve(entry.target); } }); }, observerOptions);
+    const observer = new IntersectionObserver((entries) => { 
+        entries.forEach(entry => { 
+            if (entry.isIntersecting) { 
+                entry.target.classList.add('active'); 
+                observer.unobserve(entry.target); 
+            } 
+        }); 
+    }, observerOptions);
     document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
 </script>
 
@@ -164,28 +243,82 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-   const firebaseConfig = {
-  apiKey: "AIzaSyBs_IJ_74Y8GsyChljUe2574PvyKokhV9c",
-  authDomain: "login-f9a06.firebaseapp.com",
-  projectId: "login-f9a06",
-  storageBucket: "login-f9a06.firebasestorage.app",
-  messagingSenderId: "493587142230",
-  appId: "1:493587142230:web:d87480038d5f020d71cdf7",
-  measurementId: "G-451PH7KT8T"
-};
-    const app = initializeApp(firebaseConfig); const auth = getAuth(app); const provider = new GoogleAuthProvider();
-    const navAuthBtn = document.getElementById('nav-auth-btn'); const authModal = document.getElementById('auth-modal'); const closeModalBtn = document.getElementById('close-modal-btn'); const googleBtn = document.getElementById('modal-google-btn'); const emailForm = document.getElementById('modal-email-form'); const errorMsg = document.getElementById('modal-error-msg');
-    const userDropdown = document.getElementById('user-dropdown-container'); const loginBtnContainer = document.getElementById('login-btn-container'); const logoutBtn = document.getElementById('nav-logout-btn'); const dropdownAvatar = document.getElementById('dropdown-avatar'); const dropdownName = document.getElementById('dropdown-name'); const dropdownEmail = document.getElementById('dropdown-email');
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBs_IJ_74Y8GsyChljUe2574PvyKokhV9c",
+        authDomain: "login-f9a06.firebaseapp.com",
+        projectId: "login-f9a06",
+        storageBucket: "login-f9a06.firebasestorage.app",
+        messagingSenderId: "493587142230",
+        appId: "1:493587142230:web:d87480038d5f020d71cdf7",
+        measurementId: "G-451PH7KT8T"
+    };
+
+    const app = initializeApp(firebaseConfig); 
+    const auth = getAuth(app); 
+    const provider = new GoogleAuthProvider();
+
+    const navAuthBtn = document.getElementById('nav-auth-btn'); 
+    const authModal = document.getElementById('auth-modal'); 
+    const closeModalBtn = document.getElementById('close-modal-btn'); 
+    const googleBtn = document.getElementById('modal-google-btn'); 
+    const emailForm = document.getElementById('modal-email-form'); 
+    const errorMsg = document.getElementById('modal-error-msg');
+    
+    const userDropdown = document.getElementById('user-dropdown-container'); 
+    const loginBtnContainer = document.getElementById('login-btn-container'); 
+    const logoutBtn = document.getElementById('nav-logout-btn'); 
+    const dropdownAvatar = document.getElementById('dropdown-avatar'); 
+    const dropdownName = document.getElementById('dropdown-name'); 
+    const dropdownEmail = document.getElementById('dropdown-email');
 
     navAuthBtn.addEventListener('click', () => authModal.classList.add('active'));
-    closeModalBtn.addEventListener('click', () => { authModal.classList.remove('active'); errorMsg.textContent = ""; });
-    authModal.addEventListener('click', (e) => { if (e.target === authModal) authModal.classList.remove('active'); });
-    googleBtn.addEventListener('click', () => { signInWithPopup(auth, provider).then(() => authModal.classList.remove('active')).catch((e) => errorMsg.textContent = e.message); });
-    emailForm.addEventListener('submit', (e) => { e.preventDefault(); const email = document.getElementById('modal-email').value; const pass = document.getElementById('modal-password').value; signInWithEmailAndPassword(auth, email, pass).then(() => authModal.classList.remove('active')).catch((e) => errorMsg.textContent = e.message); });
-    onAuthStateChanged(auth, (user) => {
-        if (user) { loginBtnContainer.style.display = 'none'; userDropdown.style.display = 'block'; const pUrl = user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=random`; const dName = user.displayName || user.email.split('@')[0]; dropdownAvatar.src = pUrl; dropdownName.textContent = dName; dropdownEmail.textContent = user.email; } else { loginBtnContainer.style.display = 'block'; userDropdown.style.display = 'none'; }
+    
+    closeModalBtn.addEventListener('click', () => { 
+        authModal.classList.remove('active'); 
+        errorMsg.textContent = ""; 
     });
-    if(logoutBtn) { logoutBtn.addEventListener('click', (e) => { e.preventDefault(); signOut(auth); }); }
+    
+    authModal.addEventListener('click', (e) => { 
+        if (e.target === authModal) authModal.classList.remove('active'); 
+    });
+    
+    googleBtn.addEventListener('click', () => { 
+        signInWithPopup(auth, provider)
+            .then(() => authModal.classList.remove('active'))
+            .catch((e) => errorMsg.textContent = e.message); 
+    });
+
+    emailForm.addEventListener('submit', (e) => { 
+        e.preventDefault(); 
+        const email = document.getElementById('modal-email').value; 
+        const pass = document.getElementById('modal-password').value; 
+        signInWithEmailAndPassword(auth, email, pass)
+            .then(() => authModal.classList.remove('active'))
+            .catch((e) => errorMsg.textContent = e.message); 
+    });
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) { 
+            loginBtnContainer.style.display = 'none'; 
+            userDropdown.style.display = 'block'; 
+            const pUrl = user.photoURL || `https://ui-avatars.com/api/?name=${user.email}&background=random`; 
+            const dName = user.displayName || user.email.split('@')[0]; 
+            dropdownAvatar.src = pUrl; 
+            dropdownName.textContent = dName; 
+            dropdownEmail.textContent = user.email; 
+        } else { 
+            loginBtnContainer.style.display = 'block'; 
+            userDropdown.style.display = 'none'; 
+        }
+    });
+
+    if(logoutBtn) { 
+        logoutBtn.addEventListener('click', (e) => { 
+            e.preventDefault(); 
+            signOut(auth); 
+        }); 
+    }
 </script>
 </body>
 </html>
