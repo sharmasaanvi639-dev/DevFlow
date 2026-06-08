@@ -41,7 +41,7 @@
         footer { background: #020617; padding: 50px 0; border-top: 1px solid var(--glass-border); margin-top: 50px; }
 
         /* LOGIN & DROPDOWN STYLES */
-        .btn-auth-nav { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white; padding: 6px 16px; border-radius: 50px; transition: 0.3s; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+        .btn-auth-nav { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); color: white; padding: 6px 16px; border-radius: 50px; transition: 0.3s; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
         .btn-auth-nav:hover { background: var(--primary); color: #000; border-color: var(--primary); }
         .user-avatar-small { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
         .dropdown-menu { background: rgba(30, 41, 59, 0.95) !important; backdrop-filter: blur(10px); border: 1px solid var(--glass-border) !important; }
@@ -67,36 +67,50 @@
 <!-- NAV -->
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
+        <!-- Brand -->
         <a class="navbar-brand" href="index.php">Dev<span class="text-gradient">Flow</span>.</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="bi bi-list" style="color:white; font-size: 28px;"></span>
-        </button>
+        
+        <!-- RIGHT SIDE: Toggler + Login/User -->
+        <div class="d-flex align-items-center ms-auto">
+            
+            <!-- Hamburger Menu (Visible on Mobile) -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="bi bi-list" style="color:white; font-size: 28px;"></span>
+            </button>
+
+            <!-- LOGIN BUTTON (Visible when logged out - OUTSIDE COLLAPSE) -->
+            <div id="login-btn-container" class="ms-2">
+                <button id="nav-auth-btn" class="btn-auth-nav">
+                    <i class="bi bi-person"></i> Login
+                </button>
+            </div>
+
+            <!-- USER DROPDOWN (Visible when logged in - OUTSIDE COLLAPSE) -->
+            <div class="dropdown ms-2" id="user-dropdown-container" style="display: none;">
+                <a class="dropdown-toggle btn-auth-nav" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img id="dropdown-avatar" src="" class="user-avatar-small">
+                    <span id="dropdown-name" class="d-none d-lg-inline">User</span>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end border-0 glass-panel mt-3 shadow-lg">
+                    <li><div class="px-3 py-2"><small class="text-muted d-block">Logged in as</small><span id="dropdown-email" class="fw-bold text-white">user@email.com</span></div></li>
+                    <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                    <li><a class="dropdown-item d-flex align-items-center gap-2 text-white" href="dashboard.php"><i class="bi bi-grid"></i> Dashboard</a></li>
+                    <li><hr class="dropdown-divider border-secondary opacity-25"></li>
+                    <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="#" id="nav-logout-btn"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- COLLAPSIBLE MENU CONTENT (Links Only) -->
         <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ms-auto align-items-center">
+            <ul class="navbar-nav ms-auto">
                 <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="services.php">Services</a></li>
                 <li class="nav-item"><a class="nav-link active" href="about.php">About</a></li>
                 <li class="nav-item"><a class="nav-link" href="portfolio.php">Portfolio</a></li>
                 <li class="nav-item"><a class="nav-link" href="contact.php">Contact</a></li>
                 <li class="nav-item"><a class="nav-link" href="dashboard.php">Dashboard</a></li>
-                
-                <li class="nav-item dropdown ms-lg-3" id="user-dropdown-container" style="display: none;">
-                    <a class="nav-link dropdown-toggle btn-auth-nav" href="#" role="button" data-bs-toggle="dropdown">
-                        <img id="dropdown-avatar" src="" class="user-avatar-small">
-                        <span id="dropdown-name">User</span>
-                    </a>
-                    <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end border-0 glass-panel mt-3 shadow-lg">
-                        <li><div class="px-3 py-2"><small class="text-muted d-block">Logged in as</small><span id="dropdown-email" class="fw-bold text-white">user@email.com</span></div></li>
-                        <li><hr class="dropdown-divider border-secondary opacity-25"></li>
-                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-white" href="dashboard.php"><i class="bi bi-grid"></i> Dashboard</a></li>
-                        <li><hr class="dropdown-divider border-secondary opacity-25"></li>
-                        <li><a class="dropdown-item d-flex align-items-center gap-2 text-danger" href="#" id="nav-logout-btn"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
-                    </ul>
-                </li>
-
-                <li class="nav-item ms-lg-3" id="login-btn-container">
-                    <button id="nav-auth-btn" class="btn-auth-nav"><i class="bi bi-person"></i> Login</button>
-                </li>
             </ul>
         </div>
     </div>
